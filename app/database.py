@@ -111,7 +111,7 @@ async def init_db() -> None:
             row = await cur.fetchone()
             if row and row["cnt"] == 0:
                 now = time.time()
-                for key_val, label in [("sk-test", "Default Test Key"), ("sk-omni-default", "Default Omni Key")]:
+                for key_val, label in []:
                     await db.execute(
                         "INSERT INTO api_keys (key_value, label, created_at) VALUES (?, ?, ?)",
                         (key_val, label, now),
