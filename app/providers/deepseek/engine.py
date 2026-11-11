@@ -102,9 +102,10 @@ class DeepSeekEngine(AbstractProvider):
             )
 
         data = resp.json()
-        session_id = data.get("data", {}).get("biz_data", {}).get("id")
+        biz = (data.get("data") or {}).get("biz_data") or {}
+        session_id = biz.get("id") or (biz.get("chat_session") or {}).get("id")
         if not session_id:
-            raise ProviderError("Failed to parse DeepSeek chat_session_id.")
+            raise ProviderError(f"Failed to parse DeepSeek chat_session_id: {resp.text[:300]}")
         return str(session_id)
 
     async def chat(
