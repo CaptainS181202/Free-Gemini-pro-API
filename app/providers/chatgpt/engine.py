@@ -56,7 +56,7 @@ class ChatGPTEngine(AbstractProvider):
         Otherwise, call /api/auth/session with __Secure-next-auth.session-token cookie.
         """
         # If it looks like a direct access token
-        if raw_token.startswith("eyJ") and len(raw_token) > 200:
+        if raw_token.startswith("eyJ") and raw_token.count(".") == 2:
             return raw_token
 
         # Check cache
@@ -67,7 +67,10 @@ class ChatGPTEngine(AbstractProvider):
 
         # Fetch new access token using session cookie
         url = f"{_BASE_URL}/api/auth/session"
-        cookies = {"__Secure-next-auth.session-token": raw_token}
+        if len(raw_token) > 3900:
+            cookies = {f"__Secure-next-auth.session-token.{i}": raw_token[j:j + 3900] for i, j in enumerate(range(0, len(raw_token), 3900))}
+        else:
+            cookies = {"__Secure-next-auth.session-token": raw_token}
         headers = {
             "User-Agent": (
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
